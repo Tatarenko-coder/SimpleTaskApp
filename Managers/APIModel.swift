@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 struct NewsResponse: Decodable {
     let status: String
     let totalResults: Int
@@ -21,7 +20,7 @@ struct Article: Decodable {
     let description: String?
     let url: URL?
     let urlToImage: URL?
-    let publishedAt: Date
+    let publishedAt: Date?
     let content: String?
 }
 

@@ -26,18 +26,22 @@ struct TasksView: View {
                         TitleTask(task: task)
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        Button {
-                            cdManager.toggleToCompleted(task)
-                        } label: {
-                            Label("Toggle", systemImage: "checkmark.circle")
+                        if task.inProgress {
+                            Button {
+                                cdManager.toggleToCompleted(task)
+                            } label: {
+                                Label("Toggle", systemImage: "checkmark.circle")
+                            }
+                            .tint(.green)
+                        } else {
+                            Button {
+                                cdManager.deleteTask(task)
+                            } label: {
+                                Label("Toggle", systemImage: "trash")
+                            }
+                            .tint(.red)
                         }
-                        .tint(.green)
-                        Button {
-                            cdManager.deleteTask(task)
-                        } label: {
-                            Label("Toggle", systemImage: "trash")
-                        }
-                        .tint(.red)
+                        
                     }
                 }
             }

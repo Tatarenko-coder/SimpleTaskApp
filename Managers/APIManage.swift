@@ -14,14 +14,16 @@ enum Link {
     var url: URL? {
         switch self {
         case .news:
-            return URL(string: "​https://newsapi.org/v2/everything?q=tesla&from=2024-02-04&sortBy=publishedAt&apiKey=3b995d6c8e0b4abfb0561b09fe654077")
+            return URL(string: "​https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=3b995d6c8e0b4abfb0561b09fe654077")
         }
     }
+    
 }
 
 enum NetworkError: Error {
     case notData, toManyRequest, decodingError
 }
+
 
 func warningMessage(error: NetworkError) -> String {
     switch error {
@@ -35,17 +37,15 @@ func warningMessage(error: NetworkError) -> String {
 }
 
 final class NewsService: ObservableObject {
-    
     init() {}
     
     static let shared = NewsService()
     
-    private let apiKey = "3b995d6c8e0b4abfb0561b09fe654077"
-    private let baseURL = "https://newsapi.org/v2/everything?q=tesla&from=2024-02-04&sortBy=publishedAt&apiKey="
+    private let baseURL = "https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=3b995d6c8e0b4abfb0561b09fe654077"
     
     func fetchNews(completion: @escaping (Result<[Article], NetworkError>) -> Void) {
         print("fetch")
-        let fetchRequest = URLRequest(url: (Link.news.url ?? URL(string: baseURL + apiKey))!)
+        let fetchRequest = URLRequest(url: (Link.news.url ?? URL(string: baseURL))!)
         URLSession.shared.dataTask(with: fetchRequest) { (data, response, error) -> Void in
             if error != nil {
                 print( "Error in session is not nil")
@@ -55,13 +55,10 @@ final class NewsService: ObservableObject {
                 print("status code: \(String(describing: httpResponse?.statusCode))")
                 
                 if httpResponse?.statusCode == 429 {
-                    
                     completion(.failure(.toManyRequest))
-                    
                 } else {
-                    
                     guard let safeData = data else { return }
-                    
+//                    print(String(data: safeData, encoding: .utf8) ?? "No data")
                     do {
                         let decoder = JSONDecoder()
                         decoder.dateDecodingStrategy = .iso8601

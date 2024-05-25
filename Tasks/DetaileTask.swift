@@ -12,6 +12,7 @@ struct DetaileTask: View {
     @State private var showAllertCompleted:Bool = false
     @ObservedObject var task: Task
     let cdManager = CoreDateManager.shared
+    @Environment(\.dismiss) var dismiss
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
@@ -30,25 +31,62 @@ struct DetaileTask: View {
             Text(task.descriptionTask ?? "")
                 .font(.headline.weight(.regular))
             Spacer()
-            Button {
-                showAllertCompleted.toggle()
-            } label: {
-                Text("Completed")
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .font(.title3.weight(.bold))
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .background(.blue)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-            }
-            .alert("Do you want to complete this task?", isPresented: $showAllertCompleted) {
-                Button("Yes", role: .destructive) {
-                    cdManager.toggleToCompleted(task)
+            if task.inProgress {
+                Button {
+                    showAllertCompleted.toggle()
+                } label: {
+                    Text("Completed")
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .background(.blue)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
-                Button("No", role: .cancel) { }
+//                .alert("Do you want to complete this task?", isPresented: $showAllertCompleted) {
+//                    Button("Yes", role: .destructive) {
+//                        cdManager.toggleToCompleted(task)
+//                    }
+//                    Button("No", role: .cancel) { }
+//                }
             }
+            
         }
+        .overlay(alignment: .center, content: {
+            if showAllertCompleted {
+                VStack(spacing: 20) {
+                    Text("Do you want to complete this task?")
+                        .multilineTextAlignment(.center)
+                        .font(.headline)
+                    HStack {
+                        Button  {
+                            showAllertCompleted = false
+                        } label: {
+                            Text("No")
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .foregroundStyle(.blue)
+                        }
+                        Button  {
+                            cdManager.toggleToCompleted(task)
+                            showAllertCompleted = false
+                        } label: {
+                            Text("Yes")
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .foregroundStyle(.green)
+                            
+                        }
+                        
+                    }
+                    .padding(.horizontal)
+                    
+                }
+                .padding()
+                .frame(width: 220, height: 200, alignment: .center)
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+            }
+        })
         .padding(20)
         .navigationTitle(task.title ?? "")
         .toolbar {
@@ -68,5 +106,9 @@ struct DetaileTask: View {
 }
 
 #Preview {
-    FinalView()
+    DetaileTask(task: Task(context: CoreDateManager.shared.content))
 }
+
+
+
+

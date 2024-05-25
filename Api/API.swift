@@ -9,11 +9,13 @@ import SwiftUI
 
 
 struct API: View {
+    
     @StateObject var newsService = NewsService.shared
     @State var news: [Article] = []
     @State private var isLoading = false
     @State private var showError = false
     @State private var errorMesege = ""
+    @State private var apiErrorMesege = ""
     var body: some View {
         NavigationView {
             if isLoading {
@@ -46,8 +48,10 @@ struct API: View {
                 isLoading = false
                 switch result {
                 case .success(let success):
+                    print(success)
                     news = success
                 case .failure(let networkError):
+                    print("failure: \(networkError)")
                     errorMesege = warningMessage(error: networkError)
                     showError = true
                 }
